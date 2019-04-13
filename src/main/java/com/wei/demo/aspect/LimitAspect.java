@@ -49,24 +49,25 @@ public class LimitAspect {
 
             StringBuffer stringBuffer = new StringBuffer();
             stringBuffer.append(ipAddress).append("-")
-                    .append(targetClass.getName()).append("- ")
+                    .append(targetClass.getName()).append("-")
                     .append(method.getName()).append("-")
                     .append(rateLimit.key());
 
             List<String> keys = Collections.singletonList(stringBuffer.toString());
 
+            //传入脚本对象、限流key、限流次数、限流时间参数
             Number number = limitRedisTemplate.execute(redisluaScript, keys, rateLimit.count(), rateLimit.time());
 
             if (number != null && number.intValue() != 0 && number.intValue() <= rateLimit.count()) {
-                logger.info("限流时间段内访问第：{} 次", number.toString());
+                logger.info(rateLimit.time() + "s内能访问" + rateLimit.count() + "次，" + "第：{} 次", number.toString());
                 return joinPoint.proceed();
+            } else {
+                throw new RuntimeException("已经到设置限流次数");
             }
 
         } else {
             return joinPoint.proceed();
         }
-
-        throw new RuntimeException("已经到设置限流次数");
     }
 
     public static String getIpAddr(HttpServletRequest request) {

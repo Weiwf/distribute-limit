@@ -20,10 +20,11 @@ public class ApiController {
     @Autowired
     private RedisTemplate redisTemplate;
 
-    // 10 秒中，可以访问10次
-    @RateLimit(key = "test", time = 10, count = 10)
+    // 10 秒中，可以访问5次
+    @RateLimit(key = "test", time = 10, count = 5)
     @GetMapping("/test")
     public String luaLimiter() {
+        //统计接口历史访问量
         RedisAtomicInteger entityIdCounter = new RedisAtomicInteger("entityIdCounter", redisTemplate.getConnectionFactory());
 
         String date = DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss.SSS");

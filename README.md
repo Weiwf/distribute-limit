@@ -111,6 +111,7 @@ public class LimitAspect {
 
             List<String> keys = Collections.singletonList(stringBuffer.toString());
 
+	    //传入脚本对象、限流key、限流次数、限流时间参数
             Number number = limitRedisTemplate.execute(redisluaScript, keys, rateLimit.count(), rateLimit.time());
 
             if (number != null && number.intValue() != 0 && number.intValue() <= rateLimit.count()) {
@@ -158,8 +159,7 @@ public class ApiController {
 ```
 
 #### 启动应用
-浏览器访问：http://127.0.0.1:8080/test
-10s内只能访问5次，超过10s后归0重新计时
+浏览器访问：http://127.0.0.1:8080/test，10s内只能访问5次，超过10s后归0重新计数
 
 日志
 ```
